@@ -1,0 +1,33 @@
+services:
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mysql
+      - redis
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: aigrade
+      MYSQL_USER: aigrade
+      MYSQL_PASSWORD: aigrade
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - "6379:6379"
+  paddleocr:
+    image: paddlepaddle/paddle:3.0.0
+    profiles: ["ocr"]
+    command: ["python", "-c", "print('Mount PaddleOCR service implementation here')"]
+
+volumes:
+  mysql_data:
